@@ -22,6 +22,16 @@
 	name = "cloud.google.com/go"
 	version = "0.25.0"
 
+[[constraint]]
+	name = "github.com/icrowley/fake"
+	branch = "master"
+
+[[constraint]]
+	name = "github.com/mozillazg/go-unidecode"
+	branch = "master"
+
+
 [prune]
+  #non-go = false
   go-tests = true
   unused-packages = true

@@ -10,14 +10,20 @@ import (
 )
 
 type Arguments struct {
-	EsHost string
-	EsPort int
+	EsPrefix string
+	EsHost   string
+	EsPort   int
+	Year     int
+	Size     int
 }
 
 func BuildArguments(c *cli.Context) Arguments {
 	return Arguments{
-		EsHost: strings.TrimSpace(c.GlobalString("eshost")),
-		EsPort: c.GlobalInt("esport"),
+		EsPrefix: strings.TrimSpace(c.GlobalString("esprefix")),
+		EsHost:   strings.TrimSpace(c.GlobalString("eshost")),
+		EsPort:   c.GlobalInt("esport"),
+		Year:     c.GlobalInt("year"),
+		Size:     c.GlobalInt("size"),
 	}
 }
 
@@ -27,6 +33,8 @@ func (a Arguments) Verify() error {
 	verify.
 		That(len(a.EsHost) > 0, "Elasticsearch host is empty").
 		That(a.EsPort > 0, "Elasticsearch port is not positive").
+		That(a.Year >= 1900, "The year must be greater than 1900").
+		That(a.Size > 0, "The size must be strictly positive").
 		That(parseErr == nil, "Elasticsearch URL can not be parsed")
 	return verify.GetError()
 }
@@ -50,9 +58,9 @@ func BuildCliApp() *cli.App {
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:   "prefix",
-			Value:  "lid2",
-			Usage:  "The URL prefix used by the webapp",
+			Name:   "esprefix",
+			Value:  "big-httplogs",
+			Usage:  "Elasticsearch index prefix",
 			EnvVar: "GAVAGE_PREFIX",
 		},
 		cli.StringFlag{
@@ -67,6 +75,18 @@ func BuildCliApp() *cli.App {
 			Usage:  "Elasticsearch port",
 			EnvVar: "GAVAGE_ESPORT",
 		},
+		cli.IntFlag{
+			Name:   "year",
+			Value:  2018,
+			Usage:  "Year of generated data",
+			EnvVar: "GAVAGE_YEAR",
+		},
+		cli.IntFlag{
+			Name:   "size",
+			Value:  1000,
+			Usage:  "Size of generated data in GB",
+			EnvVar: "GAVAGE_SIZE",
+		},
 		cli.BoolFlag{
 			Name:   "syslog",
 			Usage:  "write logs to syslog instead of stderr",
@@ -79,8 +99,21 @@ func BuildCliApp() *cli.App {
 			EnvVar: "GAVAGE_LOGLEVEL",
 		},
 	}
-
-	app.Action = MainCommand
+	app.Commands = []cli.Command{
+		{
+			Name:   "feed",
+			Usage:  "feed ES some random logs",
+			Action: MainCommand,
+		},
+		{
+			Name:  "conf",
+			Usage: "print index creation configuration",
+			Action: func(c *cli.Context) error {
+				fmt.Println(GetEsOpts("example", 16, 0))
+				return nil
+			},
+		},
+	}
 	return app
 }
 
