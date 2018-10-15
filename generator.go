@@ -51,3 +51,7 @@ func (g *MonthGenerator) Next() (res []ESLogLine) {
 	g.nbGenerated += rest
 	return g.esbuf
 }
+
+func (g *MonthGenerator) Percent() int {
+	return int(float64(100*g.nbGenerated) / float64(g.TotalLogLines))
+}

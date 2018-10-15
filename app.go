@@ -77,7 +77,7 @@ func BuildCliApp() *cli.App {
 		},
 		cli.IntFlag{
 			Name:   "year",
-			Value:  2018,
+			Value:  2017,
 			Usage:  "Year of generated data",
 			EnvVar: "GAVAGE_YEAR",
 		},
