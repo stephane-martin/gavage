@@ -8,7 +8,6 @@ import (
 
 	"cloud.google.com/go/civil"
 	"github.com/corpix/uarand"
-	"github.com/icrowley/fake"
 )
 
 type LogLine struct {
@@ -51,12 +50,14 @@ func (l *LogLine) Random(start, end time.Time, r *rand.Rand) *LogLine {
 	if l == nil {
 		l = new(LogLine)
 	}
+	if r == nil {
+		r = rand.New(rand.NewSource(time.Now().UnixNano()))
+	}
 	uar := uarand.UARand{Randomizer: r}
 	l.Timestamp = start.Add(time.Nanosecond * time.Duration(r.Int63n(end.Sub(start).Nanoseconds())))
 	l.TimeTaken = r.ExpFloat64()
 	l.ClientIP = FakeClientIP(r)
-	// TODO: eliminate
-	l.Username = fake.UserName()
+	l.Username = FakeUserName(r)
 	l.ExceptionID = FakeExceptionID(r)
 	l.FilterResult = FakeFilterResult(r)
 	l.Categories = FakeCategories(r)
@@ -82,7 +83,7 @@ func (l *LogLine) Random(start, end time.Time, r *rand.Rand) *LogLine {
 
 func (l *LogLine) ToES(res *ESLogLine) *ESLogLine {
 	if l == nil {
-		// TODO
+		l = l.Random(time.Now().Add(-time.Hour), time.Now(), nil)
 	}
 	if res == nil {
 		res = new(ESLogLine)

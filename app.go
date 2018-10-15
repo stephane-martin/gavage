@@ -113,6 +113,15 @@ func BuildCliApp() *cli.App {
 				return nil
 			},
 		},
+		{
+			Name:  "one",
+			Usage: "print one fake JSON document",
+			Action: func(c *cli.Context) error {
+				var l *LogLine
+				fmt.Println(l.toJSON())
+				return nil
+			},
+		},
 	}
 	return app
 }

@@ -98,6 +98,5 @@ func upload(clt *elastic.Client, month int, args Arguments, logger log15.Logger)
 			logger.Warn("Some documents failed to be uploaded", "nb", len(failed))
 		}
 	}
-
 	return nil
 }

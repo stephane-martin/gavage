@@ -23,7 +23,7 @@
 	version = "0.25.0"
 
 [[constraint]]
-	name = "github.com/icrowley/fake"
+	name = "github.com/corpix/uarand"
 	branch = "master"
 
 [[constraint]]
